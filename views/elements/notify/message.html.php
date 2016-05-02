@@ -1,0 +1,1 @@
+<div class="alert alert-<?=$options['type']?>" role="alert"><?=$message?></div>
