@@ -60,6 +60,73 @@ class NotificationTest extends \lithium\test\Unit {
 		$result = trim($this->notification->error());
 		$this->assertEqual($expected, $result);
 	}
+
+	public function testClear() {
+		Notify::write('Test 1');
+		Notify::info('Test 2');
+		Notify::error('Test 3');
+
+		$this->notification->message('message');
+		$this->assertEmpty($this->notification->message('message'));
+
+		$this->notification->message('info');
+		$this->assertEmpty($this->notification->message('info'));
+
+		$this->notification->message('error');
+		$this->assertEmpty($this->notification->message('error'));
+	}
+
+	public function testReadMultiple() {
+		Notify::info('Test Info');
+		Notify::success('Test Success');
+
+		$result = $this->notification->show(['info', 'success']);
+
+		$this->assertTags($result, array(
+			array(
+				'div' => array(
+					'class' => 'alert alert-info',
+					'role'  => 'alert'
+				)
+			),
+			'Test Info',
+			'/div',
+			array(
+				'div' => array(
+					'class' => 'alert alert-success',
+					'role'  => 'alert'
+				)
+			),
+			'Test Success',
+			'/div',
+		));
+	}
+
+	public function testReadAll() {
+		Notify::info('Test Info');
+		Notify::success('Test Success');
+
+		$result = $this->notification->all();
+
+		$this->assertTags($result, array(
+			array(
+				'div' => array(
+					'class' => 'alert alert-info',
+					'role'  => 'alert'
+				)
+			),
+			'Test Info',
+			'/div',
+			array(
+				'div' => array(
+					'class' => 'alert alert-success',
+					'role'  => 'alert'
+				)
+			),
+			'Test Success',
+			'/div',
+		));
+	}
 }
 
 ?>

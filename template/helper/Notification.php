@@ -25,13 +25,23 @@ class Notification extends \lithium\template\Helper {
 	/*
 	 * Outputs a message to the user.
 	 *
-	 * @param string [$key] Optional message key.
+	 * @param mixed [$input] Optional message key(s)
 	 * @return string Returns the rendered template.
 	 */
-	public function show($key = 'message') {
+	public function show($input = 'message') {
 		$storage = $this->_classes['storage'];
 
+		if (is_array($input)) {
+			$output = '';
+			foreach ($input as $key) {
+				$output .= $this->show($key);
+			}
+
+			return $output;
+		}
+
 		// Continue if we have a message
+		$key = $input;
 		if ($data = $storage::read($key)) {
 			// Grabbed message so delete it
 			$storage::delete($key);
@@ -43,6 +53,22 @@ class Notification extends \lithium\template\Helper {
 			// Render content if we have a matching string
 			return $view->render(array('element' => $element), $data, $options);
 		}
+	}
+
+	/*
+	 * Outputs all messages to the user.
+	 *
+	 * @return string Returns the rendered template.
+	 */
+	public function all() {
+		$storage = $this->_classes['storage'];
+
+		$output = '';
+		foreach ($storage::types() as $key) {
+			$output .= $this->show($key);
+		}
+
+		return $output;
 	}
 
 	/**

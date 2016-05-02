@@ -1,6 +1,6 @@
 <?php
 /**
- * Li3_Notify : Notification Message Library 
+ * Li3_Notify : Notification Message Library
  *
  * @copyright   Copyright 2016, Graeme Wheeler
  * @license     http://www.opensource.org/licenses/MIT The MIT License
@@ -22,6 +22,7 @@ class NotifyTest extends \lithium\test\Unit {
 
 	public function tearDown() {
 		Session::delete('default');
+		Notify::reset();
 	}
 
 	/*
@@ -32,13 +33,86 @@ class NotifyTest extends \lithium\test\Unit {
 		$defaults = Notify::config();
 
 		$result = Notify::config(array(
+			'default' => 'message',
 			'session' => 'app\storage\Session',
 		));
 		$this->assertNotEqual($defaults, Notify::config());
 		$this->assertEqual('app\storage\Session', $result['session']);
+		$this->assertEqual('message', $result['default']);
 
 		// Reset config
 		$this->assertEqual($defaults, Notify::config($defaults));
+	}
+
+	public function testConfigTypes() {
+		$defaults = Notify::config();
+		$result = Notify::types();
+		$this->assertEqual(array_keys($defaults['types']), $result);
+
+		$result = Notify::type('error');
+		$this->assertEqual($defaults['output'], $result);
+
+		Notify::types(array('error' => array('element' => 'notify/error')));
+		$result = Notify::type('error');
+		$this->assertEqual(array('element' => 'notify/error'), $result);
+	}
+
+	public function testAddType() {
+		$defaults = Notify::config();
+		$types  = Notify::types();
+
+		$result = Notify::types(array('site'));
+		$this->assertEqual(count($types) + 1, count($result));
+		$this->assertTrue(in_array('site', $result));
+
+		$result = Notify::type('site');
+		$this->assertEqual($defaults['output'], $result);
+
+		$result = Notify::types(array('site' => ['element' => 'notify/site']));
+		$this->assertNotEqual($defaults['output'], $result);
+	}
+
+	public function testConfigOrder() {
+		$defaults = Notify::config();
+		$types = array_keys($defaults['types']);
+
+		$result = Notify::types();
+		$this->assertEqual($types, $result);
+		$this->assertNotEqual('error', $result[0]);
+
+		Notify::config(['order' => ['error']]);
+		$result = Notify::types();
+		$this->assertEqual(count($types), count($result));
+		$this->assertEqual('error', $result[0]);
+	}
+
+	public function testConfigInvalidOrder() {
+		$defaults = Notify::config();
+		$types = array_keys($defaults['types']);
+
+		Notify::config(['order' => 'not_an_array']);
+		$result = Notify::types();
+		$this->assertEqual((count($types)+1), count($result));
+	}
+
+	public function testConfigInvalidTypes() {
+		$defaults = Notify::config();
+		$types = array_keys($defaults['types']);
+
+		Notify::config(['types' => 'not_an_array']);
+		$result = Notify::types();
+		$this->assertEqual(count($types)+1, count($result));
+		Notify::reset();
+
+		Notify::config(['types' => []]);
+		$result = Notify::types();
+		$this->assertEqual(count($types), count($result), print_r($result, true));
+		Notify::reset();
+
+		Notify::config(['types' => ['potato','apple']]);
+		$result = Notify::types();
+		$this->assertEqual(count($types)+2, count($result), print_r($result, true));
+		Notify::reset();
 	}
 
 	/*
