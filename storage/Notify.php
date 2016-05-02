@@ -8,6 +8,7 @@
 
 namespace li3_notify\storage;
 
+use lithium\aop\Filters;
 use lithium\util\Set;
 
 class Notify extends \lithium\core\StaticObject {
@@ -23,6 +24,7 @@ class Notify extends \lithium\core\StaticObject {
 		'prefix'  => 'Notify',           		// Prepended to all data keys
 		'default' => 'message',					// Set the default class
 		'output'  => array(
+			'library' => 'li3_notify',			// Set default library to use for template path
 			'element' => 'notify/message',		// Set default element to use
 		),
 		'types'   => array(						// These don't need to be explicitly defined
@@ -120,6 +122,27 @@ class Notify extends \lithium\core\StaticObject {
 		}
 
 		return array();
+	}
+
+	/**
+	 * Binds the messaging system to a controller in a li3_flash_message-compatible way
+	 * to enable messages to be set inline in other controller methods e.g. redirect
+	 *
+	 * @param object $controller An instance of `lithium\action\Controller`.
+	 * @return object Returns the passed `$controller` instance.
+	 */
+	public static function bindTo($controller) {
+		Filters::apply($controller, 'redirect', function($params, $next) {
+			foreach (Notify::types() as $key) {
+				if (isset($params['options'][$key])) {
+					Notify::write($params['options'][$key], $key);
+					unset($params['options'][$key]);
+				}
+			}
+			return $next($params);
+		});
+
+		return $controller;
 	}
 
 	/**
