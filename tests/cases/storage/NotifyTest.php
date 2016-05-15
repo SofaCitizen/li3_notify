@@ -54,7 +54,7 @@ class NotifyTest extends \lithium\test\Unit {
 
 		Notify::types(array('error' => array('element' => 'notify/error')));
 		$result = Notify::type('error');
-		$this->assertEqual(array('element' => 'notify/error'), $result);
+		$this->assertEqual(array('element' => 'notify/error', 'library' => 'li3_notify'), $result);
 	}
 
 	public function testAddType() {
