@@ -1,6 +1,6 @@
 <?php
 /**
- * Li3_Notify : Notification Message Library 
+ * Li3_Notify : Notification Message Library
  *
  * @copyright   Copyright 2016, Graeme Wheeler
  * @license     http://www.opensource.org/licenses/MIT The MIT License
@@ -18,6 +18,10 @@ use li3_notify\template\helper\Notification;
 class NotificationTest extends \lithium\test\Unit {
 
 	public function setUp() {
+		Session::config(array(
+			'default' => array('adapter' => 'Php', 'session.name' => 'li3_notify.test')
+		));
+
 		$library = Libraries::get('li3_notify');
 
 		// Pass the context to the helper else options won't get handled.
