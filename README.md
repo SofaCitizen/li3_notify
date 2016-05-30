@@ -21,4 +21,4 @@ It differs from li3_flash_message by having status types built-in and also by be
 Libraries::add('li3_notify');
 
 ?>
-``
+```
