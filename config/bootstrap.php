@@ -10,7 +10,7 @@ use lithium\aop\Filters;
 use li3_notify\storage\Notify;
 
 Filters::apply('lithium\action\Dispatcher', '_callable', function($params, $next) {
-	return Notify::bindTo($next($params), ['random' => 'potato']);
+	return Notify::bindTo($next($params));
 });
 
 ?>
