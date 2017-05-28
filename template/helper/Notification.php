@@ -2,7 +2,7 @@
 /**
  * Li3_Notify : Notification Message Library 
  *
- * @copyright   Copyright 2016, Graeme Wheeler
+ * @copyright   Copyright 2017, Graeme Wheeler
  * @license     http://www.opensource.org/licenses/MIT The MIT License
  */
 
@@ -48,10 +48,9 @@ class Notification extends \lithium\template\Helper {
 
 			$view = $this->_context->view();
 			$options = $storage::type($key);
-			$element = $options['element'];
 
 			// Render content if we have a matching string
-			return $view->render(array('element' => $element), $data, $options);
+			return $view->render('element', $data, $options);
 		}
 	}
 

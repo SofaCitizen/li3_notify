@@ -2,7 +2,7 @@
 /**
  * Li3_Notify : Notification Message Library
  *
- * @copyright   Copyright 2016, Graeme Wheeler
+ * @copyright   Copyright 2017, Graeme Wheeler
  * @license     http://www.opensource.org/licenses/MIT The MIT License
  */
 
@@ -54,7 +54,7 @@ class NotifyTest extends \lithium\test\Unit {
 
 		Notify::types(array('error' => array('element' => 'notify/error')));
 		$result = Notify::type('error');
-		$this->assertEqual(array('element' => 'notify/error', 'library' => 'li3_notify'), $result);
+		$this->assertEqual(array('template' => 'notify/error', 'library' => 'li3_notify'), $result);
 	}
 
 	public function testAddType() {

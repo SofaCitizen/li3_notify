@@ -2,7 +2,7 @@
 /**
  * Li3_Notify : Notification Message Library
  *
- * @copyright   Copyright 2016, Graeme Wheeler
+ * @copyright   Copyright 2017, Graeme Wheeler
  * @license     http://www.opensource.org/licenses/MIT The MIT License
  */
 
@@ -24,14 +24,15 @@ class Notify extends \lithium\core\StaticObject {
 		'prefix'  => 'Notify',           		// Prepended to all data keys
 		'default' => 'message',					// Set the default class
 		'output'  => array(
-			'library' => 'li3_notify',			// Set default library to use for template path
-			'element' => 'notify/message',		// Set default element to use
+			'library'  => 'li3_notify',			// Set default library to use for template path
+			'template' => 'notify/message',		// Set default element to use
 		),
 		'types'   => array(						// These don't need to be explicitly defined
 			'message' => null,					// However, setting them here allows them to
 			'info'    => null,					// be shown via the "all" method of the helper
 			'success' => null,					// In addition, we can use this to set additional
 			'warning' => null,					// options for rendering
+			'danger'  => null,					//
 			'error'   => null,					//
 		),
 		'order'   => array(),                   // Set the order that the messages will output
@@ -57,9 +58,18 @@ class Notify extends \lithium\core\StaticObject {
 		}
 
 		if ($config) {
-			// Pre-format types (if supplied) and then merge supplied data with existing data
 			if (isset($config['types']) && !empty($config['types'])) {
+				// Normalise array & replace legacy element key if set
 				$config['types'] = Set::Normalize($config['types']);
+				$config['types'] = array_map(function($type) {
+					if (isset($type['element'])) {
+						$type['template'] = $type['element'];
+						unset($type['element']);
+					}
+					return $type;
+				}, $config['types']);
+
+				// Merge with existing
 				$config['types'] = array_merge(static::$_config['types'], $config['types']);
 			}
 			$config = $config + static::$_config;

@@ -8,11 +8,12 @@
 
 namespace li3_notify\config;
 
-use lithium\aop\Filters;
-use li3_notify\storage\Notify;
+use lithium\net\http\Router;
+use lithium\core\Environment;
 
-Filters::apply('lithium\action\Dispatcher', '_callable', function($params, $next) {
-	return Notify::bindTo($next($params));
-});
+if (!Environment::is('production')) {
+    Router::connect('/li3_notify/demo/{:action}', ['controller' => 'li3_notify.demo']);
+}
+
 
 ?>
